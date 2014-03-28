@@ -10,9 +10,59 @@
         <script src="lib/js/odometer.min.js"></script>
 
         <script>
+			var running = true;
+			var earnings = 0;
+			var wage = 0;
+			var msInterval = 3000;
+			
             window.odometerOptions = {
-                format: '(,ddd).dd'
-            }
+                format: '(,ddd).dd',
+				duration: msInterval - 1000,
+            };
+			
+			function recalculateVisibility() {
+				$('#secondStage').css('display', $('#wageInput').val() ? "inherit" : "none");
+				$('#thirdStage').css('display', (earnings > 0) || running ? "inherit" : "none");
+			}
+			
+			function inputChanged() {
+				recalculateVisibility();
+				wage = parseFloat($('#wageInput').val());
+			}
+			
+			function actionPressed() {
+				if (!running) {
+					$('#actionButton').html('I\'m done working for now.');
+					$('#actionButton').removeClass('btn-primary');
+					$('#actionButton').addClass('btn-danger');
+					running = true;
+					setTimeout(mainLoop, msInterval);
+				} else {
+					$('#actionButton').html('I\'m working right now.');
+					$('#actionButton').removeClass('btn-danger');
+					$('#actionButton').addClass('btn-primary');
+					running = false;
+					
+				}
+				recalculateVisibility();
+			}
+			
+			function mainLoop() {
+				//Check if running and valid input...
+				if (!running)
+					return;
+				
+				//User must have deleted money while running, so act like we stopped.
+				if (!$('#wageInput').val() || wage <= 0 || !wage) {
+					actionPressed();
+					return;
+				}
+					
+				earnings += ((wage / 60) / 60) * (msInterval / 1000);
+				$('#earned').html(earnings);
+				recalculateVisibility();
+				setTimeout(mainLoop, msInterval);
+			}
         </script>
     </head>
     <body>
@@ -25,21 +75,36 @@
                         <label for="wageInput">Every hour, I make...</label>
                         <div class="input-group">
                             <span class="input-group-addon">$</span>
-                            <input type="text" class="form-control" id="wageInput"
-                                placeholder="x.xx">
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox"><strong>I'm working right now.</strong>
-                            </label>
+                            <input type="text" class="form-control"
+								id="wageInput" placeholder="x.xx">
                         </div>
                     </form>
-                    <br />
-                    <p>You've currently earned...</p>
-                    <h1>$<span class="odometer">0</span></h1>
-                    <script src="lib/js/bootstrap.min.js"></script>
+					<br />
+					<div id="secondStage" style="display: none;">
+						<a href="#" onclick="actionPressed(); return false;"
+							class="btn" id="actionButton"
+							style="width: 100%;">...</a>
+						<br /><br />
+						<div id="thirdStage">
+							<p>You've currently earned...</p>
+							<h1>$<span class="odometer" id="earned">0</span></h1>                    
+						</div>
+					</div>
                 </div>
             </div>
         </div>
+		
+		<script src="lib/js/bootstrap.min.js"></script>
+		<script>
+			//Register events
+			$('#wageInput').on('input', inputChanged);
+			
+			//Move from initial running state to not-running (init button text and class)
+			actionPressed();
+			
+			//In case we refresh and the number gets auto-filled by the browser.
+			inputChanged();
+			
+		</script>
     </body>
 </html>
