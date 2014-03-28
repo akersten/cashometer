@@ -1,0 +1,4 @@
+cashometer
+==========
+
+Earnings visualizer
