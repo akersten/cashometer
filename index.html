@@ -8,8 +8,38 @@
 
         <script src="lib/js/jquery-1.11.0.min.js"></script>
         <script src="lib/js/odometer.min.js"></script>
+
+        <script>
+            window.odometerOptions = {
+                format: '(,ddd).dd'
+            }
+        </script>
     </head>
     <body>
-        <h1 class="odometer">123</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h1>Cashometer</h1>
+                   
+                    <form role="form">
+                        <label for="wageInput">Every hour, I make...</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">$</span>
+                            <input type="text" class="form-control" id="wageInput"
+                                placeholder="x.xx">
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"><strong>I'm working right now.</strong>
+                            </label>
+                        </div>
+                    </form>
+                    <br />
+                    <p>You've currently earned...</p>
+                    <h1>$<span class="odometer">0</span></h1>
+                    <script src="lib/js/bootstrap.min.js"></script>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
